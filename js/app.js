@@ -13,11 +13,11 @@ var numberOfPairs={
   hard: 6
 };
 var chosenNumberOfPairs=0;// reset the chosen number of pairs for the game
-var moves=5 //reset moves left
+var moves=0 //reset moves left
 var openCards=[]// reset open cards list
 var star=0 //reset number of stars
 var twoWrong=0; //count 2 wrong guess (in order to remove 1 star)
-var timer={    // contain time passed from start of game. 
+var timer={    // contain time passed from start of game.
   seconds: 0,
   minutes: 0,
   hours: 0
@@ -74,25 +74,15 @@ function deckArray(numberOfPairs,cardTypes){
 function wrongGuess(){
   openCards[0].removeClass("open show");
   openCards[1].removeClass("open show");
-  openCards=[]
-  moves--;
-  twoWrong++;
+  openCards=[];
+  moves++;
   $(".moves").remove();
   scorePanel.append("<div class=\"moves\"> " + String(moves)+ "-Moves</div>");
-  if(twoWrong==2){
-      stars.children().first().remove()
-      twoWrong=0;
+  if(moves%2==0 && star>1){
+      stars.children().first().remove();
       star--;
   };
-  if(moves<1){ //this is Game Over screen
-      stopTimer()
-      $(".card").remove();
-      $(".deck").append("<div class=\"menu\"><h1>Game over</h1>better luck next time</div>");
-      $(".menu").append("<br><br><div class=\"restart\">Restart - <i class=\"fa fa-redo\"></i></div>"); // will give option to restart game
-      restart();
-  }
-
-};
+}
 
 
 /*
@@ -105,6 +95,9 @@ function rightGuess(){
   openCards[1].addClass("match");
   openCards=[];
   rightGuessCounter++;
+  moves++;
+  $(".moves").remove();
+  scorePanel.append("<div class=\"moves\"> " + String(moves)+ "-Moves</div>");
   if(rightGuessCounter==chosenNumberOfPairs){ //this is victory screen
     stopTimer();
     $(".card").remove();
