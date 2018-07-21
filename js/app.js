@@ -5,6 +5,7 @@ var rightGuessCounter=0; //count right guesses
 var deck = $('.deck');// will point to deck (for convenience)
 var stars= $(".stars");// will point to the stars (for convenience)
 var scorePanel=$(".score-panel");// will point to score panel (for convenience)
+var container=$(".container");
 // this will hold the number of pairs set for each difficulty (can be changed but will make the game ugly)
 var numberOfPairs={
   easy: 3,
@@ -12,8 +13,18 @@ var numberOfPairs={
   hard: 6
 };
 var chosenNumberOfPairs=0;// reset the chosen number of pairs for the game
-var moves=0 //reset moves left
+var moves=5 //reset moves left
 var openCards=[]// reset open cards list
+var star=0 //reset number of stars
+var twoWrong=0; //count 2 wrong guess (in order to remove 1 star)
+var timer={    // contain time passed from start of game. 
+  seconds: 0,
+  minutes: 0,
+  hours: 0
+};
+var time; // will contain the time passed.
+
+
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -65,12 +76,20 @@ function wrongGuess(){
   openCards[1].removeClass("open show");
   openCards=[]
   moves--;
+  twoWrong++;
   $(".moves").remove();
   scorePanel.append("<div class=\"moves\"> " + String(moves)+ "-Moves</div>");
-  stars.children().first().remove()
-  if(moves<1){
-    $(".card").remove();
-    $(".deck").append("<div class=\"menu\"><h1>Game over</h1>better luck next time</div>");
+  if(twoWrong==2){
+      stars.children().first().remove()
+      twoWrong=0;
+      star--;
+  };
+  if(moves<1){ //this is Game Over screen
+      stopTimer()
+      $(".card").remove();
+      $(".deck").append("<div class=\"menu\"><h1>Game over</h1>better luck next time</div>");
+      $(".menu").append("<br><br><div class=\"restart\">Restart - <i class=\"fa fa-redo\"></i></div>"); // will give option to restart game
+      restart();
   }
 
 };
@@ -86,9 +105,16 @@ function rightGuess(){
   openCards[1].addClass("match");
   openCards=[];
   rightGuessCounter++;
-  if(rightGuessCounter==chosenNumberOfPairs){
+  if(rightGuessCounter==chosenNumberOfPairs){ //this is victory screen
+    stopTimer();
     $(".card").remove();
-    $(".deck").append("<div class=\"menu\"><h1>Victory!</h1>Congratulation you won</div>");
+    $(".deck").append("<div class=\"menu\"><h1>Victory!</h1>Congratulation you won<br><br></div>");
+    timeTaken();
+    for(i=0;i<star;i++){
+      $(".menu").append("<i class=\"fa fa-star\"></i>");
+    }
+    $(".menu").append("<br><br><div class=\"restart\">Restart - <i class=\"fa fa-redo\"></i></div>");
+    restart();
   }
 }
 
@@ -96,12 +122,18 @@ function rightGuess(){
 *if restart button pushed will reset all variables and set main menu again
 */
 
-
 function restart(){
-  scorePanel.find(".restart").bind("click", function (){
+  container.find(".restart").bind("click", function (){
     rightGuessCounter=0;
     moves=0
     openCards=[];
+    twoWrong=0;
+    star=0;
+    moves=5
+    stopTimer()
+    timer.seconds=0;
+    timer.minutes=0;
+    timer.hours=0;
     $(".card").remove();
     $(".moves").remove();
     stars.children().remove();
@@ -132,13 +164,99 @@ function restart(){
 
  }
 
+/*
+*proparly display the time, maintain 00:00:00 format
+*/
+
+function setTimer(){
+    if(timer.seconds<59){
+      timer.seconds++;
+    }
+    if(timer.seconds==59){
+      timer.seconds=0;
+      if(timer.minutes<59){
+        timer.minutes++;
+      }
+      if(timer.minutes==59){
+        timer.hours++;
+     }
+    }
+    $(".timer").html("");
+    if(timer.minutes==0&&timer.hours==0){
+      if(timer.seconds<10){
+          $(".timer").html("00:00:0"+timer.seconds);
+        }
+        else{
+          $(".timer").html("00:00:"+timer.seconds);
+        }
+    }
+    if(timer.minutes!=0&&timer.hours==0){
+      if(timer.minutes<10){
+          $(".timer").html("00:0"+timer.minutes+":"+timer.seconds);
+        }
+        else{
+          $(".timer").html("00:"+timer.minutes+":"+timer.seconds);
+        }
+    }
+    if(timer.minutes!=0&&timer.hours!=0){
+      if(timer.hours<10){
+          $(".timer").html("0"+timer.hours+":"+timer.minutes+":"+timer.seconds);
+        }
+        else{
+          $(".timer").html(timer.hours+":"+timer.minutes+":"+timer.seconds);
+        }
+    }
+}
+
+
+
+//show time in victory screen same format as setTime but it will show it in different place
+function timeTaken(){
+  if(timer.minutes==0&&timer.hours==0){
+    if(timer.seconds<10){
+        $(".menu").append("time taken - 00:00:0"+timer.seconds+"<br><br>");
+      }
+      else{
+        $(".menu").append("time taken - 00:00:"+timer.seconds+"<br><br>");
+      }
+    }
+    if(timer.minutes!=0&&timer.hours==0){
+      if(timer.minutes<10){
+        $(".menu").append("time taken - 00:0"+timer.minutes+":"+timer.seconds+"<br>");
+      }
+      else{
+        $(".menu").append("time taken - 00:"+timer.minutes+":"+timer.seconds+"<br><br>");
+      }
+    }
+    if(timer.minutes!=0&&timer.hours!=0){
+      if(timer.hours<10){
+        $(".menu").append("time taken - 0"+timer.hours+":"+timer.minutes+":"+timer.seconds+"<br><br>");
+      }
+      else{
+        $(".menu").append("time taken - "+timer.hours+":"+timer.minutes+":"+timer.seconds)+"<br><br>";
+      }
+    }
+}
+
+
+//show the time every second
+
+function displayTimer() {
+    time = setInterval(setTimer, 1000);
+}
+
+// stop counting the time when needed.
+
+function stopTimer(){
+  clearInterval(time);
+}
 
 /*
 *create stars and moves depending on difficulty picked
 */
 function loseMove(){
-  scorePanel.append("<div class=\"moves\"> " + String(moves)+ " -Moves</div>");
-  for(i=0;i<moves;i++){
+  scorePanel.append("<div class=\"moves\">" + moves + " -Moves</div>");
+  for(i=0;i<star;i++){
     stars.append("<li><i class=\"fa fa-star\"></i></li>");
   }
 }
@@ -172,24 +290,27 @@ function game(){
       shuffledDeck = shuffle(deckArray(numberOfPairs.easy,cardTypes));
       generateCards(numberOfPairs.easy*2,shuffledDeck);
       chosenNumberOfPairs=numberOfPairs.easy;
-      moves=3;
-      loseMove()
+      star=3;
+      displayTimer();
+      loseMove();
       round();
     }
     if (difficulty=="Medium"){
       shuffledDeck = shuffle(deckArray(numberOfPairs.medium,cardTypes));
       generateCards(numberOfPairs.medium*2,shuffledDeck);
       chosenNumberOfPairs=numberOfPairs.medium;
-      moves=4;
-      loseMove()
+      star=4;
+      displayTimer();
+      loseMove();
       round();
     }
     if (difficulty=="Hard"){
       shuffledDeck = shuffle(deckArray(numberOfPairs.hard,cardTypes));
       generateCards(numberOfPairs.hard*2,shuffledDeck);
       chosenNumberOfPairs=numberOfPairs.hard;
-      moves=5
-      loseMove()
+      star=5;
+      displayTimer();
+      loseMove();
       round();
     }
   });

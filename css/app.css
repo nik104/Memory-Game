@@ -127,7 +127,7 @@ h1 {
  */
 
 .score-panel {
-    text-align: left;
+    text-align: center;
     width: 345px;
     margin-bottom: 10px;
 }
@@ -137,6 +137,7 @@ h1 {
     padding: 0;
     display: inline-block;
     margin: 0 5px 0 0;
+    float: left;
 }
 .score-panel .moves {
     margin: 0;
@@ -155,6 +156,13 @@ h1 {
     float: right;
     cursor: pointer;
 }
+.deck .restart {
+    cursor: pointer;
+}
+ .timer {
+    float: center;
+    cursor: pointer;
+  }
 
 /*animation ispired by https://css-tricks.com/almanac/properties/t/transform/
  * had to do some changes and still not 100% sure i like the way it behaves.
