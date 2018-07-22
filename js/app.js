@@ -23,7 +23,7 @@ var timer={    // contain time passed from start of game.
   hours: 0
 };
 var time; // will contain the time passed.
-
+var starsHtml="";
 
 
 // Shuffle function from http://stackoverflow.com/a/2450976
@@ -84,7 +84,6 @@ function wrongGuess(){
   };
 }
 
-
 /*
 *in case of right guess will match 2 shown cards, reset open cards list
 *add 1 to right guess counter , if guess counter is equal to number of pairs in
@@ -99,15 +98,16 @@ function rightGuess(){
   $(".moves").remove();
   scorePanel.append("<div class=\"moves\"> " + String(moves)+ "-Moves</div>");
   if(rightGuessCounter==chosenNumberOfPairs){ //this is victory screen
+    modal.style.display = "block";
     stopTimer();
     $(".card").remove();
-    $(".deck").append("<div class=\"menu\"><h1>Victory!</h1>Congratulation you won<br><br></div>");
     timeTaken();
     for(i=0;i<star;i++){
-      $(".menu").append("<i class=\"fa fa-star\"></i>");
+      starsHtml+="<i class=\"fa fa-star\"></i>";
     }
-    $(".menu").append("<br><br><div class=\"restart\">Restart - <i class=\"fa fa-redo\"></i></div>");
-    restart();
+    $(".modal-content .stars").html(starsHtml);
+    $(".modal-content").append("<br><br><div class=\"restart\">Restart - <i class=\"fa fa-redo\"></i></div>");
+  //  $(".modal-content").append("<span class=\"close\">&times;</span>");
   }
 }
 
@@ -122,8 +122,10 @@ function restart(){
     openCards=[];
     twoWrong=0;
     star=0;
-    moves=5
+    moves=0;
+    starsHtml=""
     stopTimer()
+    $(".timer").html("00:00:00");
     timer.seconds=0;
     timer.minutes=0;
     timer.hours=0;
@@ -207,26 +209,26 @@ function setTimer(){
 function timeTaken(){
   if(timer.minutes==0&&timer.hours==0){
     if(timer.seconds<10){
-        $(".menu").append("time taken - 00:00:0"+timer.seconds+"<br><br>");
+        $(".modal-content").append("time taken - 00:00:0"+timer.seconds+"<br><br>");
       }
       else{
-        $(".menu").append("time taken - 00:00:"+timer.seconds+"<br><br>");
+        $(".modal-content").append("time taken - 00:00:"+timer.seconds+"<br><br>");
       }
     }
     if(timer.minutes!=0&&timer.hours==0){
       if(timer.minutes<10){
-        $(".menu").append("time taken - 00:0"+timer.minutes+":"+timer.seconds+"<br>");
+        $(".modal-content").append("time taken - 00:0"+timer.minutes+":"+timer.seconds+"<br>");
       }
       else{
-        $(".menu").append("time taken - 00:"+timer.minutes+":"+timer.seconds+"<br><br>");
+        $(".modal-content").append("time taken - 00:"+timer.minutes+":"+timer.seconds+"<br><br>");
       }
     }
     if(timer.minutes!=0&&timer.hours!=0){
       if(timer.hours<10){
-        $(".menu").append("time taken - 0"+timer.hours+":"+timer.minutes+":"+timer.seconds+"<br><br>");
+        $(".modal-content").append("time taken - 0"+timer.hours+":"+timer.minutes+":"+timer.seconds+"<br><br>");
       }
       else{
-        $(".menu").append("time taken - "+timer.hours+":"+timer.minutes+":"+timer.seconds)+"<br><br>";
+        $(".modal-content").append("time taken - "+timer.hours+":"+timer.minutes+":"+timer.seconds)+"<br><br>";
       }
     }
 }
@@ -314,13 +316,34 @@ game();
 restart();
 
 
-/*
- * set up the event listener for a card. If a card is clicked:
- *  - display the card's symbol (put this functionality in another function that you call from this one)
- *  - add the card to a *list* of "open" cards (put this functionality in another function that you call from this one)
- *  - if the list already has another card, check to see if the two cards match
- *    + if the cards do match, lock the cards in the open position (put this functionality in another function that you call from this one)
- *    + if the cards do not match, remove the cards from the list and hide the card's symbol (put this functionality in another function that you call from this one)
- *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
- *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
- */
+
+//modal based on https://www.w3schools.com
+
+// Get the modal
+var modal = document.getElementById('victoryModal');
+
+// Get the button that opens the modal need remove
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// Get the <span> element that closes the modal
+var redo = document.getElementsByClassName("restart")[0];
+
+// When the user clicks the button, open the modal need remove
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}

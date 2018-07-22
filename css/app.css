@@ -178,3 +178,10 @@ h1 {
     background: #02b4e4;
   }
 }
+
+
+/*modal style*/
+
+#victoryModal{
+  text-align: center;
+}
