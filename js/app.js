@@ -5,7 +5,7 @@ var rightGuessCounter=0; //count right guesses
 var deck = $('.deck');// will point to deck (for convenience)
 var stars= $(".stars");// will point to the stars (for convenience)
 var scorePanel=$(".score-panel");// will point to score panel (for convenience)
-var container=$(".container");
+var container=$("body");
 // this will hold the number of pairs set for each difficulty (can be changed but will make the game ugly)
 var numberOfPairs={
   easy: 3,
@@ -24,7 +24,7 @@ var timer={    // contain time passed from start of game.
 };
 var time; // will contain the time passed.
 var starsHtml="";
-
+okToClick=true; //bug fix made to stop the user from flipping cards untill the delay on wrong guess is done.
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -79,9 +79,11 @@ function wrongGuess(){
   $(".moves").remove();
   scorePanel.append("<div class=\"moves\"> " + String(moves)+ "-Moves</div>");
   if(moves%2==0 && star>1){
+       $(".score-panel .stars").children().first().remove();
       stars.children().first().remove();
       star--;
   };
+  okToClick=true;
 }
 
 /*
@@ -97,6 +99,7 @@ function rightGuess(){
   moves++;
   $(".moves").remove();
   scorePanel.append("<div class=\"moves\"> " + String(moves)+ "-Moves</div>");
+  okToClick=true;
   if(rightGuessCounter==chosenNumberOfPairs){ //this is victory screen
     modal.style.display = "block";
     stopTimer();
@@ -105,9 +108,9 @@ function rightGuess(){
     for(i=0;i<star;i++){
       starsHtml+="<i class=\"fa fa-star\"></i>";
     }
-    $(".modal-content .stars").html(starsHtml);
-    $(".modal-content").append("<br><br><div class=\"restart\">Restart - <i class=\"fa fa-redo\"></i></div>");
-  //  $(".modal-content").append("<span class=\"close\">&times;</span>");
+    $(".modal-box .stars").html(starsHtml);
+    $(".modal-box").append("<br><br><span class=\"restart\">Restart - <i class=\"fa fa-redo\"></i></span>");
+    restart();
   }
 }
 
@@ -124,6 +127,7 @@ function restart(){
     star=0;
     moves=0;
     starsHtml=""
+    okToClick=true;
     stopTimer()
     $(".timer").html("00:00:00");
     timer.seconds=0;
@@ -133,6 +137,10 @@ function restart(){
     $(".moves").remove();
     stars.children().remove();
     $(".menu").remove();
+    $(".modal-box .stars").empty();
+    $(".modal-box .timeTaken").empty();
+    $(".modal-box .restart").empty();
+    modal.style.display = "none";
     game();
   });
 }
@@ -142,12 +150,13 @@ function restart(){
  */
  function round(){
    deck.find(".card").bind("click", function (){
-     if(openCards.length<2 && $(this).is(openCards[0])!= true)
+     if(openCards.length<2 && $(this).is(openCards[0])!= true && okToClick==true)
      {
        $(this).addClass("open show");
        openCards.push($(this));
      }
-     if(openCards.length==2){
+     if(openCards.length>1 && okToClick==true){
+       okToClick=false;
        if(openCards[0].html()==openCards[1].html()){
          rightGuess();
        }
@@ -209,26 +218,26 @@ function setTimer(){
 function timeTaken(){
   if(timer.minutes==0&&timer.hours==0){
     if(timer.seconds<10){
-        $(".modal-content").append("time taken - 00:00:0"+timer.seconds+"<br><br>");
+        $(".modal-box .timeTaken").append("time taken - 00:00:0"+timer.seconds);
       }
       else{
-        $(".modal-content").append("time taken - 00:00:"+timer.seconds+"<br><br>");
+        $(".modal-box .timeTaken").append("time taken - 00:00:"+timer.seconds);
       }
     }
     if(timer.minutes!=0&&timer.hours==0){
       if(timer.minutes<10){
-        $(".modal-content").append("time taken - 00:0"+timer.minutes+":"+timer.seconds+"<br>");
+        $(".modal-box .timeTaken").append("time taken - 00:0"+timer.minutes+":"+timer.seconds);
       }
       else{
-        $(".modal-content").append("time taken - 00:"+timer.minutes+":"+timer.seconds+"<br><br>");
+        $(".modal-box .timeTaken").append("time taken - 00:"+timer.minutes+":"+timer.seconds);
       }
     }
     if(timer.minutes!=0&&timer.hours!=0){
       if(timer.hours<10){
-        $(".modal-content").append("time taken - 0"+timer.hours+":"+timer.minutes+":"+timer.seconds+"<br><br>");
+        $(".modal-box .timeTaken").append("time taken - 0"+timer.hours+":"+timer.minutes+":"+timer.seconds);
       }
       else{
-        $(".modal-content").append("time taken - "+timer.hours+":"+timer.minutes+":"+timer.seconds)+"<br><br>";
+        $(".modal-box .timeTaken").append("time taken - "+timer.hours+":"+timer.minutes+":"+timer.seconds);
       }
     }
 }
@@ -321,29 +330,3 @@ restart();
 
 // Get the modal
 var modal = document.getElementById('victoryModal');
-
-// Get the button that opens the modal need remove
-var btn = document.getElementById("myBtn");
-
-// Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
-
-// Get the <span> element that closes the modal
-var redo = document.getElementsByClassName("restart")[0];
-
-// When the user clicks the button, open the modal need remove
-btn.onclick = function() {
-    modal.style.display = "block";
-}
-
-// When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-    modal.style.display = "none";
-}
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
-}

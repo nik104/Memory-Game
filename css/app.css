@@ -37,7 +37,29 @@ h1 {
 /*
  * Styles for the menu
  */
+ /* The Modal (background) */
+ .modal {
+     display: none; /* Hidden by default */
+     position: fixed; /* Stay in place */
+     z-index: 1; /* Sit on top */
+     padding-top: 100px; /* Location of the box */
+     left: 0;
+     top: 0;
+     width: 100%; /* Full width */
+     height: 100%; /* Full height */
+     overflow: auto; /* Enable scroll if needed */
+     background-color: rgb(0,0,0); /* Fallback color */
+     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+ }
 
+ /* Modal Content */
+ .modal-content {
+     background-color: #f4f4f4;
+     margin: auto;
+     padding: 20px;
+     border: 1px solid #888;
+     width: 40%;
+ }
 
 .menu {
     width: 600px;
@@ -156,6 +178,9 @@ h1 {
     float: right;
     cursor: pointer;
 }
+.modal-box .restart {
+    cursor: pointer;
+}
 .deck .restart {
     cursor: pointer;
 }
@@ -163,7 +188,9 @@ h1 {
     float: center;
     cursor: pointer;
   }
-
+.timeTaken{
+  margin:15px;
+}
 /*animation ispired by https://css-tricks.com/almanac/properties/t/transform/
  * had to do some changes and still not 100% sure i like the way it behaves.
 */
