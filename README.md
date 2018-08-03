@@ -1,6 +1,6 @@
 # Memory-game
 Final project for Udacity IPND
-##how it looks
+## How it looks
 ![snippet](img/screenShot.PNG)
 ## Instructions
 * pick difficulty
